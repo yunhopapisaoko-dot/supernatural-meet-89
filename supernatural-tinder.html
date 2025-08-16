@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tinder Sobrenatural</title>
+    <style>
+        /* Reset e variáveis CSS */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --background: hsl(240, 10%, 3.9%);
+            --foreground: hsl(300, 20%, 98%);
+            --card: hsl(240, 8%, 6%);
+            --card-foreground: hsl(300, 20%, 98%);
+            --border: hsl(240, 5%, 15%);
+            --mystical: hsl(280, 100%, 70%);
+            --celestial: hsl(200, 100%, 80%);
+            --ethereal: hsl(320, 100%, 75%);
+            --destructive: hsl(0, 84.2%, 60.2%);
+            --muted-foreground: hsl(240, 5%, 64.9%);
+            
+            --gradient-mystical: linear-gradient(135deg, hsl(280, 100%, 70%), hsl(320, 100%, 75%));
+            --gradient-celestial: linear-gradient(135deg, hsl(200, 100%, 80%), hsl(280, 100%, 70%));
+            --gradient-background: radial-gradient(ellipse 80% 80% at 50% -20%, hsl(280, 100%, 70%, 0.15), transparent),
+                                  radial-gradient(ellipse 80% 80% at 80% 80%, hsl(320, 100%, 75%, 0.1), transparent),
+                                  hsl(240, 10%, 3.9%);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--gradient-background);
+            color: var(--foreground);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 1rem;
+            min-height: 100vh;
+        }
+
+        /* Glassmorphism */
+        .glass-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+        }
+
+        .modern-blur {
+            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .profile-button {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: none;
+            border: none;
+            color: var(--foreground);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 0.5rem;
+            padding: 0.25rem;
+        }
+
+        .profile-button:hover {
+            transform: scale(1.05);
+        }
+
+        .profile-button:hover .username {
+            color: var(--mystical);
+        }
+
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 2px solid rgba(280, 100%, 70%, 0.3);
+            object-fit: cover;
+            transition: all 0.3s ease;
+        }
+
+        .profile-button:hover .avatar {
+            border-color: rgba(280, 100%, 70%, 0.5);
+        }
+
+        .username {
+            font-weight: bold;
+            font-size: 1.125rem;
+            transition: color 0.3s ease;
+        }
+
+        .race {
+            font-size: 0.875rem;
+            color: var(--muted-foreground);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .btn-glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--foreground);
+        }
+
+        .btn-mystical {
+            background: var(--gradient-mystical);
+            color: white;
+            box-shadow: 0 4px 20px rgba(280, 100%, 70%, 0.3);
+        }
+
+        .btn-celestial {
+            background: var(--gradient-celestial);
+            color: white;
+            box-shadow: 0 4px 20px rgba(200, 100%, 80%, 0.3);
+        }
+
+        .btn-destructive {
+            background: var(--destructive);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* Profile Card */
+        .profile-card {
+            position: relative;
+            margin-bottom: 1.5rem;
+            border-radius: 1rem;
+            overflow: hidden;
+            aspect-ratio: 3/4;
+            transition: transform 0.3s ease;
+        }
+
+        .profile-card:hover {
+            transform: scale(1.02);
+        }
+
+        .profile-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .profile-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            padding: 1.5rem;
+        }
+
+        .profile-info {
+            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            padding: 1rem;
+        }
+
+        .profile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.75rem;
+        }
+
+        .profile-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            margin: 0;
+        }
+
+        .profile-age {
+            font-size: 1.125rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin: 0;
+        }
+
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            display: inline-block;
+        }
+
+        .badge-mystical {
+            background: var(--gradient-mystical);
+            color: white;
+        }
+
+        .badge-outline {
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: rgba(255, 255, 255, 0.9);
+            background: transparent;
+        }
+
+        .profile-about {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.875rem;
+            line-height: 1.4;
+        }
+
+        /* Action Buttons */
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .action-btn {
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .action-btn-pass {
+            width: 56px;
+            height: 56px;
+            background: var(--destructive);
+        }
+
+        .action-btn-super {
+            width: 72px;
+            height: 72px;
+            background: var(--gradient-celestial);
+        }
+
+        .action-btn-like {
+            width: 56px;
+            height: 56px;
+            background: var(--gradient-mystical);
+        }
+
+        .action-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        .action-btn svg {
+            width: 24px;
+            height: 24px;
+            fill: white;
+        }
+
+        .action-btn-super svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        /* Instructions */
+        .instructions {
+            text-align: center;
+            padding: 1rem;
+            font-size: 0.875rem;
+            color: var(--muted-foreground);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            max-width: 400px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+
+        .modal-header svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--mystical);
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--foreground);
+            font-size: 0.875rem;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--mystical);
+        }
+
+        .form-textarea {
+            resize: none;
+            height: 80px;
+        }
+
+        /* Avatar selector */
+        .avatar-selector {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .avatar-preview {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 4px solid rgba(280, 100%, 70%, 0.3);
+            object-fit: cover;
+        }
+
+        .avatar-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 0.5rem;
+        }
+
+        .avatar-option {
+            aspect-ratio: 1;
+            border-radius: 0.75rem;
+            border: 2px solid var(--border);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .avatar-option:hover {
+            border-color: var(--mystical);
+            transform: scale(1.05);
+        }
+
+        .avatar-option img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Family options */
+        .family-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .family-option {
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .family-option.selected {
+            background: var(--gradient-mystical);
+            border-color: var(--mystical);
+        }
+
+        .family-option-title {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .family-option-desc {
+            font-size: 0.75rem;
+            opacity: 0.8;
+        }
+
+        .family-input {
+            margin-top: 0.5rem;
+            margin-left: 1rem;
+        }
+
+        /* Button groups */
+        .btn-group {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn-group .btn {
+            flex: 1;
+            padding: 0.75rem;
+        }
+
+        /* Notification system */
+        .notification {
+            position: relative;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--mystical);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .floating-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .pulse {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1.5rem;
+        }
+
+        .empty-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1rem;
+            background: var(--gradient-mystical);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .empty-icon svg {
+            width: 40px;
+            height: 40px;
+            fill: white;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .container {
+                padding: 0.5rem;
+            }
+
+            .header {
+                margin-bottom: 1rem;
+            }
+
+            .avatar {
+                width: 40px;
+                height: 40px;
+            }
+
+            .username {
+                font-size: 1rem;
+            }
+
+            .actions {
+                gap: 1.5rem;
+            }
+
+            .action-btn-pass, .action-btn-like {
+                width: 48px;
+                height: 48px;
+            }
+
+            .action-btn-super {
+                width: 64px;
+                height: 64px;
+            }
+
+            .profile-name {
+                font-size: 1.25rem;
+            }
+
+            .profile-age {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <button class="profile-button" onclick="openEditProfile()">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=user1&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf" alt="Avatar" class="avatar" id="currentAvatar">
+                <div>
+                    <div class="username" id="currentUsername">Usuário Místico</div>
+                    <div class="race" id="currentRace">Draeven</div>
+                </div>
+            </button>
+            
+            <div class="header-actions">
+                <div class="notification">
+                    <button class="btn btn-glass" onclick="openNotifications()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+                            <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
+                        </svg>
+                    </button>
+                    <div class="notification-badge" id="notificationBadge" style="display: none;">2</div>
+                </div>
+                
+                <button class="btn btn-glass" onclick="logout()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16,17 21,12 16,7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div id="mainContent">
+            <!-- Profile Card -->
+            <div class="profile-card glass-card" id="profileCard">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=profile1&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf" alt="Profile" class="profile-image" id="profileImage">
+                
+                <div class="profile-overlay">
+                    <div class="profile-info">
+                        <div class="profile-header">
+                            <div>
+                                <h2 class="profile-name" id="profileName">Luna Shadowmere</h2>
+                                <p class="profile-age" id="profileAge">25 anos</p>
+                            </div>
+                            <div>
+                                <div class="badge badge-mystical" id="profileRace">🌙 Lunari</div>
+                                <div class="badge badge-outline" id="profileFamily" style="display: none;">Casa das Sombras</div>
+                            </div>
+                        </div>
+                        
+                        <p class="profile-about" id="profileAbout">Uma criatura da noite que caminha entre mundos. Busco alguém que compreenda a magia das sombras e dos mistérios lunares.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="actions">
+                <button class="action-btn action-btn-pass" onclick="passUser()" title="Passar">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M18 6L6 18M6 6l12 12"/>
+                    </svg>
+                </button>
+                
+                <button class="action-btn action-btn-super" onclick="superLike()" title="Super Like">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                </button>
+                
+                <button class="action-btn action-btn-like" onclick="likeUser()" title="Curtir">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Instructions -->
+            <div class="instructions glass-card">
+                <p>
+                    <span style="color: var(--destructive);">❌</span> Passar • 
+                    <span style="color: var(--celestial);"> ⭐</span> Super Like • 
+                    <span style="color: var(--mystical);"> ❤️</span> Curtir
+                </p>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" style="display: none;">
+            <div class="glass-card">
+                <div class="empty-state">
+                    <div class="empty-icon floating-animation">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p style="font-weight: bold; margin-bottom: 0.5rem;">
+                            Não há mais perfis para mostrar no momento.
+                        </p>
+                        <p style="font-size: 0.875rem; color: var(--muted-foreground);">
+                            Volte mais tarde para ver novos usuários!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal" id="editProfileModal">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <circle cx="12" cy="12" r="3"/>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                </svg>
+                Editar Perfil Sobrenatural
+            </div>
+            
+            <div class="avatar-selector">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=user1&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf" alt="Avatar Preview" class="avatar-preview" id="avatarPreview">
+                <button class="btn btn-glass" onclick="openAvatarGallery()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/>
+                        <circle cx="12" cy="13" r="3"/>
+                    </svg>
+                    Alterar Foto
+                </button>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Nome de usuário</label>
+                <input type="text" class="form-input" id="editUsername" placeholder="Seu nome sobrenatural">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Idade</label>
+                <select class="form-select" id="editAge">
+                    <option value="">Selecione sua idade</option>
+                    <!-- Ages will be populated by JS -->
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Raça Sobrenatural</label>
+                <select class="form-select" id="editRace">
+                    <option value="">Selecione sua raça</option>
+                    <option value="Draeven">🐉 Draeven</option>
+                    <option value="Sylven">🧚 Sylven</option>
+                    <option value="Lunari">🌙 Lunari</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Linhagem Familiar</label>
+                <div class="family-options">
+                    <div class="family-option" id="hasFamily" onclick="selectFamily(true)">
+                        <div class="family-option-title">Sou de uma família</div>
+                        <div class="family-option-desc">Possuo uma linhagem ancestral</div>
+                        <input type="text" class="form-input family-input" id="familyName" placeholder="Nome da família" style="display: none;">
+                    </div>
+                    <div class="family-option" id="noFamily" onclick="selectFamily(false)">
+                        <div class="family-option-title">Não sou de família</div>
+                        <div class="family-option-desc">Sou um ser independente</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">O que você busca</label>
+                <select class="form-select" id="editLookingFor">
+                    <option value="">Selecione suas preferências</option>
+                    <option value="Draeven">🐉 Draeven</option>
+                    <option value="Sylven">🧚 Sylven</option>
+                    <option value="Lunari">🌙 Lunari</option>
+                    <option value="Todos">✨ Todos</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Sobre sua essência</label>
+                <textarea class="form-textarea" id="editAbout" placeholder="Descreva sua aura, poderes ou o que torna você único..."></textarea>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-glass" onclick="closeEditProfile()">Cancelar</button>
+                <button class="btn btn-mystical" onclick="saveProfile()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                    Salvar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Avatar Gallery Modal -->
+    <div class="modal" id="avatarGalleryModal">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                    <polyline points="21,15 16,10 5,21"/>
+                </svg>
+                Escolha sua foto de perfil
+            </div>
+            
+            <div class="avatar-grid" id="avatarGrid">
+                <!-- Avatars will be populated by JS -->
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-glass" onclick="closeAvatarGallery()">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notifications Modal -->
+    <div class="modal" id="notificationsModal">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+                    <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
+                </svg>
+                Notificações de Match
+            </div>
+            
+            <div id="notificationsList">
+                <div style="text-align: center; padding: 2rem;">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin: 0 auto 1rem; opacity: 0.5;">
+                        <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+                        <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
+                    </svg>
+                    <p style="color: var(--muted-foreground);">Nenhuma notificação nova</p>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-glass" onclick="closeNotifications()">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample data
+        const profiles = [
+            {
+                id: 1,
+                name: "Luna Shadowmere",
+                age: 25,
+                race: "Lunari",
+                family: "Casa das Sombras",
+                about: "Uma criatura da noite que caminha entre mundos. Busco alguém que compreenda a magia das sombras e dos mistérios lunares.",
+                avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=profile1&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf"
+            },
+            {
+                id: 2,
+                name: "Theron Flameheart",
+                age: 30,
+                race: "Draeven",
+                family: null,
+                about: "Guardião das chamas ancestrais, busco uma alma que possa compreender o calor do meu coração ardente e a força dos dragões antigos.",
+                avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=profile2&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf"
+            },
+            {
+                id: 3,
+                name: "Aria Stardust",
+                age: 22,
+                race: "Sylven",
+                family: "Círculo das Estrelas",
+                about: "Dançarina das estrelas cadentes, procuro alguém que compartilhe da minha paixão pela magia celestial e pelos segredos do cosmos.",
+                avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=profile3&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf"
+            }
+        ];
+
+        const avatarOptions = [
+            "https://api.dicebear.com/7.x/avataaars/svg?seed=supernatural1&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf",
+            "https://api.dicebear.com/7.x/avataaars/svg?seed=supernatural2&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf",
+            "https://api.dicebear.com/7.x/avataaars/svg?seed=supernatural3&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf",
+            "https://api.dicebear.com/7.x/avataaars/svg?seed=supernatural4&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf",
+            "https://api.dicebear.com/7.x/avataaars/svg?seed=supernatural5&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf",
+            "https://api.dicebear.com/7.x/avataaars/svg?seed=supernatural6&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf",
+            "https://api.dicebear.com/7.x/avataaars/svg?seed=supernatural7&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf",
+            "https://api.dicebear.com/7.x/avataaars/svg?seed=supernatural8&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf",
+            "https://api.dicebear.com/7.x/avataaars/svg?seed=supernatural9&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf"
+        ];
+
+        // State
+        let currentProfileIndex = 0;
+        let currentUser = {
+            username: "Usuário Místico",
+            age: 25,
+            race: "Draeven",
+            family: null,
+            lookingFor: "Todos",
+            about: "Um ser mágico em busca de conexões profundas...",
+            avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=user1&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf"
+        };
+        let hasFamily = false;
+        let matches = [];
+        let notifications = [];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            populateAgeOptions();
+            populateAvatarGrid();
+            loadCurrentProfile();
+            loadUserData();
+            // Simulate some notifications
+            setTimeout(() => {
+                addNotification("Novo match com Luna Shadowmere!");
+                addNotification("Theron Flameheart curtiu seu perfil!");
+            }, 2000);
+        });
+
+        function populateAgeOptions() {
+            const ageSelect = document.getElementById('editAge');
+            for (let i = 18; i <= 100; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i;
+                ageSelect.appendChild(option);
+            }
+            const optionPlus = document.createElement('option');
+            optionPlus.value = 100;
+            optionPlus.textContent = '+100';
+            ageSelect.appendChild(optionPlus);
+        }
+
+        function populateAvatarGrid() {
+            const grid = document.getElementById('avatarGrid');
+            grid.innerHTML = '';
+            avatarOptions.forEach((avatar, index) => {
+                const option = document.createElement('div');
+                option.className = 'avatar-option';
+                option.onclick = () => selectAvatar(avatar);
+                option.innerHTML = `<img src="${avatar}" alt="Avatar ${index + 1}">`;
+                grid.appendChild(option);
+            });
+        }
+
+        function loadCurrentProfile() {
+            if (currentProfileIndex >= profiles.length) {
+                showEmptyState();
+                return;
+            }
+
+            const profile = profiles[currentProfileIndex];
+            document.getElementById('profileName').textContent = profile.name;
+            document.getElementById('profileAge').textContent = profile.age + ' anos';
+            document.getElementById('profileRace').textContent = getRaceEmoji(profile.race) + ' ' + profile.race;
+            document.getElementById('profileAbout').textContent = profile.about;
+            document.getElementById('profileImage').src = profile.avatar;
+            
+            const familyElement = document.getElementById('profileFamily');
+            if (profile.family) {
+                familyElement.textContent = profile.family;
+                familyElement.style.display = 'inline-block';
+            } else {
+                familyElement.style.display = 'none';
+            }
+        }
+
+        function loadUserData() {
+            document.getElementById('currentUsername').textContent = currentUser.username;
+            document.getElementById('currentRace').textContent = currentUser.race;
+            document.getElementById('currentAvatar').src = currentUser.avatar;
+        }
+
+        function getRaceEmoji(race) {
+            const emojis = {
+                'Draeven': '🐉',
+                'Sylven': '🧚',
+                'Lunari': '🌙'
+            };
+            return emojis[race] || '✨';
+        }
+
+        function showEmptyState() {
+            document.getElementById('mainContent').style.display = 'none';
+            document.getElementById('emptyState').style.display = 'block';
+        }
+
+        function nextProfile() {
+            currentProfileIndex++;
+            if (currentProfileIndex >= profiles.length) {
+                showEmptyState();
+            } else {
+                loadCurrentProfile();
+            }
+        }
+
+        function likeUser() {
+            const profile = profiles[currentProfileIndex];
+            showToast(`❤️ Você curtiu ${profile.name}!`);
+            
+            // Simulate match (50% chance)
+            if (Math.random() > 0.5) {
+                matches.push(profile);
+                addNotification(`✨ É um match com ${profile.name}!`);
+                showToast(`🎉 É um match com ${profile.name}!`, 'success');
+            }
+            
+            nextProfile();
+        }
+
+        function passUser() {
+            const profile = profiles[currentProfileIndex];
+            showToast(`Você passou ${profile.name}`);
+            nextProfile();
+        }
+
+        function superLikeUser() {
+            const profile = profiles[currentProfileIndex];
+            matches.push(profile);
+            addNotification(`⭐ Super match com ${profile.name}!`);
+            showToast(`⭐ Super match com ${profile.name}!`, 'success');
+            nextProfile();
+        }
+
+        function addNotification(message) {
+            notifications.push({
+                id: Date.now(),
+                message: message,
+                timestamp: new Date()
+            });
+            updateNotificationBadge();
+        }
+
+        function updateNotificationBadge() {
+            const badge = document.getElementById('notificationBadge');
+            if (notifications.length > 0) {
+                badge.textContent = notifications.length;
+                badge.style.display = 'flex';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        function showToast(message, type = 'info') {
+            // Simple toast implementation
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? 'var(--mystical)' : 'var(--card)'};
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 0.5rem;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+                z-index: 10000;
+                animation: slideIn 0.3s ease;
+                max-width: 300px;
+                word-wrap: break-word;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // Modal functions
+        function openEditProfile() {
+            // Load current user data
+            document.getElementById('editUsername').value = currentUser.username;
+            document.getElementById('editAge').value = currentUser.age;
+            document.getElementById('editRace').value = currentUser.race;
+            document.getElementById('editLookingFor').value = currentUser.lookingFor;
+            document.getElementById('editAbout').value = currentUser.about;
+            document.getElementById('avatarPreview').src = currentUser.avatar;
+            
+            // Set family option
+            if (currentUser.family) {
+                selectFamily(true);
+                document.getElementById('familyName').value = currentUser.family;
+            } else {
+                selectFamily(false);
+            }
+            
+            document.getElementById('editProfileModal').classList.add('show');
+        }
+
+        function closeEditProfile() {
+            document.getElementById('editProfileModal').classList.remove('show');
+        }
+
+        function selectFamily(hasFamily) {
+            const hasFamilyElement = document.getElementById('hasFamily');
+            const noFamilyElement = document.getElementById('noFamily');
+            const familyInput = document.getElementById('familyName');
+            
+            if (hasFamily) {
+                hasFamilyElement.classList.add('selected');
+                noFamilyElement.classList.remove('selected');
+                familyInput.style.display = 'block';
+                window.hasFamily = true;
+            } else {
+                hasFamilyElement.classList.remove('selected');
+                noFamilyElement.classList.add('selected');
+                familyInput.style.display = 'none';
+                familyInput.value = '';
+                window.hasFamily = false;
+            }
+        }
+
+        function saveProfile() {
+            // Validate form
+            const username = document.getElementById('editUsername').value.trim();
+            const age = document.getElementById('editAge').value;
+            const race = document.getElementById('editRace').value;
+            const lookingFor = document.getElementById('editLookingFor').value;
+            const about = document.getElementById('editAbout').value.trim();
+            const familyName = document.getElementById('familyName').value.trim();
+
+            if (!username) {
+                showToast('Digite seu nome de usuário', 'error');
+                return;
+            }
+
+            if (!age) {
+                showToast('Selecione sua idade', 'error');
+                return;
+            }
+
+            if (!race) {
+                showToast('Selecione sua raça', 'error');
+                return;
+            }
+
+            if (window.hasFamily === null || window.hasFamily === undefined) {
+                showToast('Selecione se você é de uma família', 'error');
+                return;
+            }
+
+            if (!lookingFor) {
+                showToast('Selecione o que você busca', 'error');
+                return;
+            }
+
+            if (!about) {
+                showToast('Escreva algo sobre você', 'error');
+                return;
+            }
+
+            // Update user data
+            currentUser.username = username;
+            currentUser.age = parseInt(age);
+            currentUser.race = race;
+            currentUser.lookingFor = lookingFor;
+            currentUser.about = about;
+            currentUser.family = window.hasFamily ? familyName : null;
+
+            loadUserData();
+            closeEditProfile();
+            showToast('✨ Perfil atualizado com sucesso!', 'success');
+        }
+
+        function openAvatarGallery() {
+            document.getElementById('avatarGalleryModal').classList.add('show');
+        }
+
+        function closeAvatarGallery() {
+            document.getElementById('avatarGalleryModal').classList.remove('show');
+        }
+
+        function selectAvatar(avatarUrl) {
+            currentUser.avatar = avatarUrl;
+            document.getElementById('avatarPreview').src = avatarUrl;
+            document.getElementById('currentAvatar').src = avatarUrl;
+            closeAvatarGallery();
+            showToast('Foto atualizada!', 'success');
+        }
+
+        function openNotifications() {
+            const list = document.getElementById('notificationsList');
+            if (notifications.length === 0) {
+                list.innerHTML = `
+                    <div style="text-align: center; padding: 2rem;">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin: 0 auto 1rem; opacity: 0.5;">
+                            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+                            <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
+                        </svg>
+                        <p style="color: var(--muted-foreground);">Nenhuma notificação nova</p>
+                    </div>
+                `;
+            } else {
+                list.innerHTML = notifications.map(notification => `
+                    <div style="padding: 1rem; border: 1px solid var(--border); border-radius: 0.5rem; margin-bottom: 0.75rem; background: rgba(280, 100%, 70%, 0.1);">
+                        <p style="font-weight: 500; margin-bottom: 0.25rem;">${notification.message}</p>
+                        <p style="font-size: 0.75rem; color: var(--muted-foreground);">
+                            ${notification.timestamp.toLocaleDateString('pt-BR')} às ${notification.timestamp.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'})}
+                        </p>
+                    </div>
+                `).join('');
+            }
+            
+            document.getElementById('notificationsModal').classList.add('show');
+            
+            // Clear notifications after viewing
+            notifications = [];
+            updateNotificationBadge();
+        }
+
+        function closeNotifications() {
+            document.getElementById('notificationsModal').classList.remove('show');
+        }
+
+        function logout() {
+            if (confirm('Tem certeza que deseja sair?')) {
+                showToast('Até logo! 👋');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            }
+        }
+
+        // Close modals when clicking outside
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('show');
+            }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (document.querySelector('.modal.show')) return; // Don't use shortcuts when modal is open
+            
+            switch(e.key) {
+                case 'ArrowLeft':
+                    passUser();
+                    break;
+                case 'ArrowUp':
+                    superLikeUser();
+                    break;
+                case 'ArrowRight':
+                    likeUser();
+                    break;
+            }
+        });
+
+        // Add slideIn animation CSS
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
