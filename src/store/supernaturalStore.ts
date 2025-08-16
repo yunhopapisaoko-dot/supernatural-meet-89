@@ -36,6 +36,7 @@ interface SupernaturalState {
   login: (username: string) => User | null;
   logout: () => void;
   createUser: (userData: Omit<User, 'id' | 'createdAt'>) => User;
+  updateUser: (userData: Omit<User, 'id' | 'createdAt'>) => User | null;
   deleteUser: (userId: string) => void;
   likeUser: (userId: string) => Match | null;
   passUser: (userId: string) => void;
@@ -84,6 +85,27 @@ export const useSupernaturalStore = create<SupernaturalState>()(
         }));
         
         return newUser;
+      },
+
+      updateUser: (userData) => {
+        const state = get();
+        const currentUser = state.currentUser;
+        
+        if (!currentUser) return null;
+        
+        const updatedUser: User = {
+          ...currentUser,
+          ...userData,
+        };
+        
+        set(prevState => ({
+          users: prevState.users.map(u => 
+            u.id === currentUser.id ? updatedUser : u
+          ),
+          currentUser: updatedUser
+        }));
+        
+        return updatedUser;
       },
 
       deleteUser: (userId: string) => {
